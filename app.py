@@ -108,15 +108,7 @@ with c1:
         label="Operating point P"
     )
 
-    # Current vector OP
-    ax.plot(
-        [0, P[0]],
-        [0, P[1]],
-        "m-",
-        linewidth=1.0,
-        alpha=0.6
-    )
-
+   
     # ---------------------------------------------------------
     # 6. Projection of P onto AB
     # ---------------------------------------------------------
