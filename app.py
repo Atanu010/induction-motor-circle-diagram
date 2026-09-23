@@ -51,7 +51,7 @@ with c1:
     ax.plot(circ['O'][0]+circ['R']*np.cos(th), circ['O'][1]+circ['R']*np.sin(th), 'b-', label='Current locus (circle)')
     ax.plot([0, circ['A'][0]], [0, circ['A'][1]], 'go-', label='No-load I0')
     ax.plot([0, circ['B'][0]], [0, circ['B'][1]], 'ro-', label='Blocked-rotor Isc')
-    ax.plot([circ['A'][0], circ['B'][0]], [circ['A'][1], circ['B'][1]], 'k--', label='Output line AB')
+    ax.plot([circ["A"][0], circ["B"][0]],[circ["A"][1], circ["B"][1]],"k--", linewidth=1.5, label="Reference line AB")
     ax.plot([0, P[0]], [0, P[1]], 'm-o', label='Operating point')
     ax.plot(circ['O'][0], circ['O'][1], 'kx', ms=9, label='Center')
     ax.set_aspect('equal'); ax.grid(True); ax.legend(fontsize=8)
