@@ -18,7 +18,11 @@ def build_circle(V_rated, I0, P0, Vsc, Isc, Psc):
     return dict(A=A, B=B, O=O, R=R, phi0=phi0, phisc=phisc, Isc_rated=Isc_rated)
 
 def dist_to_line(P, P1, P2):
-    return abs(np.cross(P2-P1, P-P1) / np.linalg.norm(P2-P1))
+    # 2D perpendicular distance from P to the line through P1, P2
+    d  = P2 - P1
+    v  = P  - P1
+    cross = d[0]*v[1] - d[1]*v[0]   # 2D cross product (works on any NumPy)
+    return abs(cross / np.linalg.norm(d))
 
 def performance(P, V_rated, N_sync, circ):
     A, B = circ['A'], circ['B']
