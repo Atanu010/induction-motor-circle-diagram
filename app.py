@@ -203,7 +203,10 @@ with c1:
         f"Ns = {N_sync:.1f} rpm"
     )
 
-    ax.legend(fontsize=8)
+    ax.legend(
+    fontsize=8,
+    loc="lower right"
+)
 
     st.pyplot(fig)
 
