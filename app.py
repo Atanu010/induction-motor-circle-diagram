@@ -20,6 +20,7 @@ poles = st.sidebar.number_input("Poles", 4)
 N_sync = 120*f/poles
 
 circ = build_circle(V, I0, P0, Vsc, Isc, Psc)
+
 load_factor = st.sidebar.slider(
     "Operating position (0=no-load → 1=blocked rotor)",
     0.0,
@@ -28,7 +29,7 @@ load_factor = st.sidebar.slider(
     0.01
 )
 
-P = point_on_arc(load_factor, circ)irc)
+P = point_on_arc(load_factor, circ)
 
 # Approximate operating slip used only for the
 # performance display. This keeps the current
