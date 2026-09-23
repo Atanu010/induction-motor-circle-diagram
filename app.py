@@ -20,10 +20,29 @@ poles = st.sidebar.number_input("Poles", 4)
 N_sync = 120*f/poles
 
 circ = build_circle(V, I0, P0, Vsc, Isc, Psc)
-t = st.sidebar.slider("Operating point (0=no-load → 1=stall)", 0.0, 1.0, 0.45, 0.01)
+load_factor = st.sidebar.slider(
+    "Operating point",
+    min_value=0.0,
+    max_value=1.0,
+    value=0.45,
+    step=0.01,
+    help="0 = no-load end of the circle, 1 = blocked-rotor end."
+)
 
-P = point_on_arc(t, circ)
-perf = performance(P, V, N_sync, circ)
+P = point_on_arc(load_factor, circ)
+
+# Approximate operating slip used only for the
+# performance display. This keeps the current
+# circle-diagram model internally consistent.
+slip = load_factor
+
+perf = performance(
+    P,
+    V,
+    N_sync,
+    circ,
+    slip
+)
 
 c1, c2 = st.columns([2, 1])
 with c1:
