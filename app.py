@@ -45,50 +45,62 @@ perf = performance(
 )
 
 c1, c2 = st.columns([2, 1])
+
 with c1:
     fig, ax = plt.subplots(figsize=(7, 7))
 
-    # ---------------------------------------------------------
-    # 1. Draw current locus (circle)
-    # ---------------------------------------------------------
-    th = np.linspace(0, 2 * np.pi, 400)
+    # =========================================================
+    # CURRENT LOCUS — CIRCLE
+    # =========================================================
+    theta = np.linspace(0, 2 * np.pi, 400)
+
+    circle_x = (
+        circ["O"][0]
+        + circ["R"] * np.cos(theta)
+    )
+
+    circle_y = (
+        circ["O"][1]
+        + circ["R"] * np.sin(theta)
+    )
 
     ax.plot(
-        circ["O"][0] + circ["R"] * np.cos(th),
-        circ["O"][1] + circ["R"] * np.sin(th),
+        circle_x,
+        circle_y,
         "b-",
         linewidth=2,
         label="Current locus (circle)"
     )
 
-    # ---------------------------------------------------------
-    # 2. Draw no-load point A
-    # ---------------------------------------------------------
+    # =========================================================
+    # NO-LOAD POINT A
+    # =========================================================
+    A = circ["A"]
+
     ax.plot(
-        circ["A"][0],
-        circ["A"][1],
+        A[0],
+        A[1],
         "go",
-        markersize=7,
+        markersize=8,
         label="No-load I₀"
     )
 
-    # ---------------------------------------------------------
-    # 3. Draw blocked-rotor point B
-    # ---------------------------------------------------------
+    # =========================================================
+    # BLOCKED-ROTOR POINT B
+    # =========================================================
+    B = circ["B"]
+
     ax.plot(
-        circ["B"][0],
-        circ["B"][1],
+        B[0],
+        B[1],
         "ro",
-        markersize=7,
+        markersize=8,
         label="Blocked-rotor Iₛc"
     )
 
-    # ---------------------------------------------------------
-    # 4. Draw reference line AB
-    # ---------------------------------------------------------
-    A = circ["A"]
-    B = circ["B"]
-
+    # =========================================================
+    # REFERENCE LINE AB
+    # =========================================================
     ax.plot(
         [A[0], B[0]],
         [A[1], B[1]],
@@ -97,31 +109,33 @@ with c1:
         label="Reference line AB"
     )
 
-    # ---------------------------------------------------------
-    # 5. Draw operating point P
-    # ---------------------------------------------------------
+    # =========================================================
+    # OPERATING POINT P
+    # =========================================================
     ax.plot(
         P[0],
         P[1],
         "mo",
-        markersize=8,
+        markersize=9,
         label="Operating point P"
     )
 
-   
-    # ---------------------------------------------------------
-    # 6. Projection of P onto AB
-    # ---------------------------------------------------------
+    # =========================================================
+    # PROJECTION OF P ONTO AB
+    # =========================================================
     AB = B - A
     AP = P - A
 
     denominator = np.dot(AB, AB)
 
     if denominator > 0:
-        projection_factor = np.dot(AP, AB) / denominator
+        projection_factor = (
+            np.dot(AP, AB) / denominator
+        )
+
         Q = A + projection_factor * AB
 
-        # Perpendicular construction from P to AB
+        # Perpendicular construction P -> Q
         ax.plot(
             [P[0], Q[0]],
             [P[1], Q[1]],
@@ -138,57 +152,68 @@ with c1:
             markersize=4
         )
 
-    # ---------------------------------------------------------
-    # 7. Circle centre
-    # ---------------------------------------------------------
+    # =========================================================
+    # CENTRE OF CIRCLE
+    # =========================================================
+    O = circ["O"]
+
     ax.plot(
-        circ["O"][0],
-        circ["O"][1],
+        O[0],
+        O[1],
         "kx",
         markersize=9,
         markeredgewidth=2,
-        label="Center O"
+        label="Centre O"
     )
 
-    # ---------------------------------------------------------
-    # 8. Labels
-    # ---------------------------------------------------------
-   ax.annotate(
-    "A — No-load",
-    xy=A,
-    xytext=(10, 12),
-    textcoords="offset points"
-)
+    # =========================================================
+    # POINT LABELS
+    # =========================================================
+    ax.annotate(
+        "A — No-load",
+        xy=A,
+        xytext=(10, 12),
+        textcoords="offset points"
+    )
 
     ax.annotate(
         "B — Blocked rotor",
         xy=B,
-        xytext=(8, 8),
+        xytext=(10, 10),
         textcoords="offset points"
     )
 
     ax.annotate(
         "P — Operating point",
         xy=P,
-        xytext=(8, 8),
+        xytext=(10, 10),
         textcoords="offset points"
     )
 
-   ax.annotate(
-    "O — Centre",
-    xy=circ["O"],
-    xytext=(10, -20),
-    textcoords="offset points"
-)
+    ax.annotate(
+        "O — Centre",
+        xy=O,
+        xytext=(10, -20),
+        textcoords="offset points"
+    )
 
-    # ---------------------------------------------------------
-    # 9. Formatting
-    # ---------------------------------------------------------
+    # =========================================================
+    # GRAPH FORMATTING
+    # =========================================================
     ax.set_aspect("equal")
-    ax.grid(True, alpha=0.35)
 
-    ax.set_xlabel("Active current component (A)")
-    ax.set_ylabel("Reactive current component (A)")
+    ax.grid(
+        True,
+        alpha=0.35
+    )
+
+    ax.set_xlabel(
+        "Active current component (A)"
+    )
+
+    ax.set_ylabel(
+        "Reactive current component (A)"
+    )
 
     ax.set_title(
         f"Induction Motor Circle Diagram | "
@@ -196,11 +221,12 @@ with c1:
     )
 
     ax.legend(
-    fontsize=8,
-    loc="lower right"
-)
+        fontsize=8,
+        loc="lower right"
+    )
 
     st.pyplot(fig)
+
 
 with c2:
     st.subheader("Performance @ Operating Point")
