@@ -24,18 +24,63 @@ def dist_to_line(P, P1, P2):
     cross = d[0]*v[1] - d[1]*v[0]   # 2D cross product (works on any NumPy)
     return abs(cross / np.linalg.norm(d))
 
-def performance(P, V_rated, N_sync, circ):
-    A, B = circ['A'], circ['B']
-    I_P = np.linalg.norm(P)
-    phi_P = math.atan2(P[0], P[1])          # angle from voltage (+y)
-    pf = math.cos(phi_P)
-    Pin = math.sqrt(3) * V_rated * I_P * pf
-    d_out = dist_to_line(P, A, B)
-    Pout = math.sqrt(3) * V_rated * d_out
-    torque = Pout / (2*math.pi*N_sync/60)
-    eff = (Pout / Pin * 100) if Pin > 0 else 0
-    return dict(I=I_P, pf=pf, Pin=Pin, Pout=Pout, torque=torque, eff=eff)
+def performance(P, V_rated, N_sync, circ, slip):
+    """
+    Calculate electrical and mechanical performance
+    at the selected operating point.
+    """
 
+    I_P = np.linalg.norm(P)
+
+    if I_P <= 0:
+        return {
+            "I": 0.0,
+            "pf": 0.0,
+            "Pin": 0.0,
+            "Pout": 0.0,
+            "torque": 0.0,
+            "eff": 0.0,
+            "slip": slip,
+            "speed": N_sync,
+        }
+
+    # Current angle relative to the +y voltage reference
+    phi_P = math.atan2(P[0], P[1])
+
+    pf = math.cos(phi_P)
+
+    # Three-phase input power
+    Pin = math.sqrt(3) * V_rated * I_P * pf
+
+    # Rotor speed
+    speed = (1.0 - slip) * N_sync
+
+    # Mechanical output is determined from the
+    # circle-diagram construction.
+    A = circ["A"]
+    B = circ["B"]
+
+    d_out = dist_to_line(P, A, B)
+
+    Pout = math.sqrt(3) * V_rated * d_out
+
+    # Mechanical angular speed
+    omega_m = 2 * math.pi * speed / 60
+
+    torque = Pout / omega_m if omega_m > 0 else 0.0
+
+    eff = (Pout / Pin * 100.0) if Pin > 0 else 0.0
+
+    return {
+        "I": I_P,
+        "pf": pf,
+        "Pin": Pin,
+        "Pout": Pout,
+        "torque": torque,
+        "eff": eff,
+        "slip": slip,
+        "speed": speed,
+    }
 def point_on_arc(t, circ):
     """t in [0,1] interpolates along the arc from A to B."""
     O, R, A, B = circ['O'], circ['R'], circ['A'], circ['B']
