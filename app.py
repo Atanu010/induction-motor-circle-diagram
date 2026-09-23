@@ -153,12 +153,12 @@ with c1:
     # ---------------------------------------------------------
     # 8. Labels
     # ---------------------------------------------------------
-    ax.annotate(
-        "A — No-load",
-        xy=A,
-        xytext=(8, 8),
-        textcoords="offset points"
-    )
+   ax.annotate(
+    "A — No-load",
+    xy=A,
+    xytext=(10, 12),
+    textcoords="offset points"
+)
 
     ax.annotate(
         "B — Blocked rotor",
@@ -174,12 +174,12 @@ with c1:
         textcoords="offset points"
     )
 
-    ax.annotate(
-        "O — Centre",
-        xy=circ["O"],
-        xytext=(8, -15),
-        textcoords="offset points"
-    )
+   ax.annotate(
+    "O — Centre",
+    xy=circ["O"],
+    xytext=(10, -20),
+    textcoords="offset points"
+)
 
     # ---------------------------------------------------------
     # 9. Formatting
