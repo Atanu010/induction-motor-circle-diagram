@@ -21,15 +21,14 @@ N_sync = 120*f/poles
 
 circ = build_circle(V, I0, P0, Vsc, Isc, Psc)
 load_factor = st.sidebar.slider(
-    "Operating point",
-    min_value=0.0,
-    max_value=1.0,
-    value=0.45,
-    step=0.01,
-    help="0 = no-load end of the circle, 1 = blocked-rotor end."
+    "Operating position (0=no-load → 1=blocked rotor)",
+    0.0,
+    1.0,
+    0.45,
+    0.01
 )
 
-P = point_on_arc(load_factor, circ)
+P = point_on_arc(load_factor, circ)irc)
 
 # Approximate operating slip used only for the
 # performance display. This keeps the current
@@ -46,16 +45,165 @@ perf = performance(
 
 c1, c2 = st.columns([2, 1])
 with c1:
-    fig, ax = plt.subplots(figsize=(7,7))
-    th = np.linspace(0, 2*np.pi, 400)
-    ax.plot(circ['O'][0]+circ['R']*np.cos(th), circ['O'][1]+circ['R']*np.sin(th), 'b-', label='Current locus (circle)')
-    ax.plot([0, circ['A'][0]], [0, circ['A'][1]], 'go-', label='No-load I0')
-    ax.plot([0, circ['B'][0]], [0, circ['B'][1]], 'ro-', label='Blocked-rotor Isc')
-    ax.plot([circ["A"][0], circ["B"][0]],[circ["A"][1], circ["B"][1]],"k--", linewidth=1.5, label="Reference line AB")
-    ax.plot([0, P[0]], [0, P[1]], 'm-o', label='Operating point')
-    ax.plot(circ['O'][0], circ['O'][1], 'kx', ms=9, label='Center')
-    ax.set_aspect('equal'); ax.grid(True); ax.legend(fontsize=8)
-    ax.set_title(f"Circle Diagram  |  Ns = {N_sync:.0f} rpm")
+    fig, ax = plt.subplots(figsize=(7, 7))
+
+    # ---------------------------------------------------------
+    # 1. Draw current locus (circle)
+    # ---------------------------------------------------------
+    th = np.linspace(0, 2 * np.pi, 400)
+
+    ax.plot(
+        circ["O"][0] + circ["R"] * np.cos(th),
+        circ["O"][1] + circ["R"] * np.sin(th),
+        "b-",
+        linewidth=2,
+        label="Current locus (circle)"
+    )
+
+    # ---------------------------------------------------------
+    # 2. Draw no-load point A
+    # ---------------------------------------------------------
+    ax.plot(
+        circ["A"][0],
+        circ["A"][1],
+        "go",
+        markersize=7,
+        label="No-load I₀"
+    )
+
+    # ---------------------------------------------------------
+    # 3. Draw blocked-rotor point B
+    # ---------------------------------------------------------
+    ax.plot(
+        circ["B"][0],
+        circ["B"][1],
+        "ro",
+        markersize=7,
+        label="Blocked-rotor Iₛc"
+    )
+
+    # ---------------------------------------------------------
+    # 4. Draw reference line AB
+    # ---------------------------------------------------------
+    A = circ["A"]
+    B = circ["B"]
+
+    ax.plot(
+        [A[0], B[0]],
+        [A[1], B[1]],
+        "k--",
+        linewidth=1.5,
+        label="Reference line AB"
+    )
+
+    # ---------------------------------------------------------
+    # 5. Draw operating point P
+    # ---------------------------------------------------------
+    ax.plot(
+        P[0],
+        P[1],
+        "mo",
+        markersize=8,
+        label="Operating point P"
+    )
+
+    # Current vector OP
+    ax.plot(
+        [0, P[0]],
+        [0, P[1]],
+        "m-",
+        linewidth=1.0,
+        alpha=0.6
+    )
+
+    # ---------------------------------------------------------
+    # 6. Projection of P onto AB
+    # ---------------------------------------------------------
+    AB = B - A
+    AP = P - A
+
+    denominator = np.dot(AB, AB)
+
+    if denominator > 0:
+        projection_factor = np.dot(AP, AB) / denominator
+        Q = A + projection_factor * AB
+
+        # Perpendicular construction from P to AB
+        ax.plot(
+            [P[0], Q[0]],
+            [P[1], Q[1]],
+            "k:",
+            linewidth=1.5,
+            label="Output-power construction"
+        )
+
+        # Projection point Q
+        ax.plot(
+            Q[0],
+            Q[1],
+            "ko",
+            markersize=4
+        )
+
+    # ---------------------------------------------------------
+    # 7. Circle centre
+    # ---------------------------------------------------------
+    ax.plot(
+        circ["O"][0],
+        circ["O"][1],
+        "kx",
+        markersize=9,
+        markeredgewidth=2,
+        label="Center O"
+    )
+
+    # ---------------------------------------------------------
+    # 8. Labels
+    # ---------------------------------------------------------
+    ax.annotate(
+        "A — No-load",
+        xy=A,
+        xytext=(8, 8),
+        textcoords="offset points"
+    )
+
+    ax.annotate(
+        "B — Blocked rotor",
+        xy=B,
+        xytext=(8, 8),
+        textcoords="offset points"
+    )
+
+    ax.annotate(
+        "P — Operating point",
+        xy=P,
+        xytext=(8, 8),
+        textcoords="offset points"
+    )
+
+    ax.annotate(
+        "O — Centre",
+        xy=circ["O"],
+        xytext=(8, -15),
+        textcoords="offset points"
+    )
+
+    # ---------------------------------------------------------
+    # 9. Formatting
+    # ---------------------------------------------------------
+    ax.set_aspect("equal")
+    ax.grid(True, alpha=0.35)
+
+    ax.set_xlabel("Active current component (A)")
+    ax.set_ylabel("Reactive current component (A)")
+
+    ax.set_title(
+        f"Induction Motor Circle Diagram | "
+        f"Ns = {N_sync:.1f} rpm"
+    )
+
+    ax.legend(fontsize=8)
+
     st.pyplot(fig)
 
 with c2:
