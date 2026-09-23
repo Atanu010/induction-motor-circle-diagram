@@ -59,10 +59,44 @@ with c1:
     st.pyplot(fig)
 
 with c2:
-    st.subheader("Performance @ operating point")
-    st.metric("Stator current", f"{perf['I']:.2f} A")
-    st.metric("Power factor", f"{perf['pf']:.3f}")
-    st.metric("Input power", f"{perf['Pin']:.1f} W")
-    st.metric("Output power (gross)", f"{perf['Pout']:.1f} W")
-    st.metric("Torque", f"{perf['torque']:.2f} N·m")
-    st.metric("Efficiency", f"{perf['eff']:.1f} %")
+    st.subheader("Performance @ Operating Point")
+
+    st.metric(
+        "Stator current",
+        f"{perf['I']:.2f} A"
+    )
+
+    st.metric(
+        "Power factor",
+        f"{perf['pf']:.3f}"
+    )
+
+    st.metric(
+        "Input power",
+        f"{perf['Pin']:.1f} W"
+    )
+
+    st.metric(
+        "Output power",
+        f"{perf['Pout']:.1f} W"
+    )
+
+    st.metric(
+        "Operating position",
+        f"{load_factor:.2f}"
+    )
+
+    st.metric(
+        "Rotor speed",
+        f"{perf['speed']:.1f} rpm"
+    )
+
+    st.metric(
+        "Torque",
+        f"{perf['torque']:.2f} N·m"
+    )
+
+    st.metric(
+        "Efficiency",
+        f"{perf['eff']:.1f} %"
+    )
